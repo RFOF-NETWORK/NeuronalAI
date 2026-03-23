@@ -1,0 +1,25 @@
+{
+  "definitions": {
+    "node": {
+      "required": ["id", "label"],
+      "properties": {
+        "id": "string",
+        "label": "string",
+        "position": { "type": "object", "properties": { "x": "number", "y": "number", "z": "number" } },
+        "metadata": { "type": "object" }
+      }
+    },
+    "link": {
+      "required": ["source", "target"],
+      "properties": {
+        "source": "string",
+        "target": "string",
+        "weight": "number"
+      }
+    }
+  },
+  "ui": {
+    "views": ["3DGraphView", "NodeDetailView"],
+    "theme": "dark-neon"
+  }
+}
