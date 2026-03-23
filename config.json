@@ -1,0 +1,13 @@
+{
+  "features": {
+    "useHTML": true,
+    "usePyScript": false,
+    "useCustomValidator": true,
+    "useLocalStorage": true,
+    "useFHIR": false,
+    "useOAuth": false,
+    "use3DUniverse": true,
+    "useAutoDiscovery": true
+  },
+  "version": "1.0.0-PRAI"
+}
