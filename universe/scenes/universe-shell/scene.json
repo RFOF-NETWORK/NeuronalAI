@@ -1,0 +1,9 @@
+{
+  "name": "universe-shell",
+  "type": "geometry",
+  "entry": "shell.js",
+  "meta": {
+    "isContainer": true,
+    "description": "Die umschließende 3D-Sphäre des Multiversums"
+  }
+}
