@@ -40,7 +40,11 @@
     <script>
         window.addEventListener('load', async () => {
             await praiApp.init();
-        });
+        // 2. Starte den 3D-Szenen-Loader im /universe Ordner
+        if (typeof UniverseLoader !== 'undefined') {
+            await UniverseLoader.loadAll();
+        }
+    });
     </script>
 </body>
 </html>
