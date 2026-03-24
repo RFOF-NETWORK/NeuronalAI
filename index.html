@@ -3,21 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NeuronalAI - PRAI System</title>
+    <title>NeuronalAI - PRAI System Professional</title>
     <style>
         :root {
             --color-primary: #00ffcc;
-            --color-bg: #000000;
-            --color-panel: rgba(0, 20, 20, 0.8);
-            --border-glow: 0 0 15px rgba(0, 255, 204, 0.3);
-            --font-main: 'Courier New', monospace;
-            --spacing-unit: 20px;
+            --color-primary-dim: rgba(0, 255, 204, 0.15);
+            --color-bg: #050505;
+            --color-panel-bg: rgba(0, 15, 15, 0.85);
+            --glow-standard: 0 0 15px rgba(0, 255, 204, 0.4);
+            --border-width: 1px;
+            --font-ui: 'Courier New', monospace;
+            --sidebar-width: 320px;
+            --panel-gap: 20px;
         }
 
         * {
             box-sizing: border-box;
             -webkit-font-smoothing: antialiased;
-            touch-action: none;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         body, html {
@@ -28,7 +31,8 @@
             overflow: hidden;
             background-color: var(--color-bg);
             color: var(--color-primary);
-            font-family: var(--font-main);
+            font-family: var(--font-ui);
+            user-select: none;
         }
 
         #canvas-container {
@@ -38,170 +42,239 @@
             width: 100%;
             height: 100%;
             z-index: 1;
-            perspective: 1000px;
+            background: radial-gradient(circle at center, #0a1a1a 0%, #000 100%);
         }
 
-        #ui-layer {
+        #ui-root {
             position: relative;
             z-index: 10;
             width: 100%;
             height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: var(--panel-gap);
             pointer-events: none;
+        }
+
+        /* Responsive Grid / Layout */
+        .app-layout {
             display: grid;
-            grid-template-areas: 
-                "aside main"
-                "footer footer";
-            grid-template-columns: 320px 1fr;
+            grid-template-columns: var(--sidebar-width) 1fr;
             grid-template-rows: 1fr auto;
-            padding: var(--spacing-unit);
-            gap: var(--spacing-unit);
+            gap: var(--panel-gap);
+            height: 100%;
         }
 
         .panel {
-            background: var(--color-panel);
-            border: 1px solid var(--color-primary);
-            backdrop-filter: blur(10px);
-            box-shadow: var(--border-glow);
+            background: var(--color-panel-bg);
+            border: var(--border-width) solid var(--color-primary);
+            box-shadow: var(--glow-standard);
+            backdrop-filter: blur(12px);
             pointer-events: auto;
             display: flex;
             flex-direction: column;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        aside.sidebar {
-            grid-area: aside;
-            max-height: 100%;
             overflow: hidden;
         }
 
-        header.panel-header {
+        /* Sidebar & List Audit Fixes */
+        .sidebar {
+            grid-row: 1 / 2;
+            max-height: 85vh; /* Verhindert das Herausragen aus dem Viewport */
+        }
+
+        .panel-header {
             padding: 15px;
-            border-bottom: 1px solid var(--color-primary);
-            flex-shrink: 0;
+            border-bottom: var(--border-width) solid var(--color-primary);
+            background: rgba(0, 255, 204, 0.05);
         }
 
-        header h2 {
+        .panel-header h2 {
             margin: 0;
-            font-size: 1.2rem;
-            letter-spacing: 2px;
+            font-size: 1.1rem;
+            letter-spacing: 3px;
             text-transform: uppercase;
+            text-align: center;
         }
 
-        section.node-container {
-            flex-grow: 1;
+        /* Scroll-Container Fix */
+        .scroll-area {
+            flex: 1;
             overflow-y: auto;
+            overflow-x: hidden;
             scrollbar-width: thin;
             scrollbar-color: var(--color-primary) transparent;
         }
 
-        section.node-container::-webkit-scrollbar {
+        .scroll-area::-webkit-scrollbar {
             width: 4px;
         }
 
-        section.node-container::-webkit-scrollbar-thumb {
+        .scroll-area::-webkit-scrollbar-thumb {
             background: var(--color-primary);
+            box-shadow: 0 0 5px var(--color-primary);
         }
 
-        .node-list {
+        .list-items {
             display: flex;
             flex-direction: column;
         }
 
-        .node-item {
-            padding: 12px 15px;
+        .list-item {
+            padding: 12px 20px;
             border-bottom: 1px solid rgba(0, 255, 204, 0.1);
+            font-size: 0.85rem;
             cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.2s ease;
-        }
-
-        .node-item:hover {
-            background: rgba(0, 255, 204, 0.15);
-        }
-
-        footer.status-bar {
-            grid-area: footer;
-            padding: 10px 20px;
-            font-size: 0.75rem;
-            flex-direction: row;
-            justify-content: space-between;
+            transition: all 0.2s ease;
+            display: flex;
             align-items: center;
-            letter-spacing: 1px;
+            gap: 10px;
         }
 
-        .btn-primary {
+        .list-item::before {
+            content: '>';
+            font-weight: bold;
+            opacity: 0.5;
+        }
+
+        .list-item:hover {
+            background: var(--color-primary-dim);
+            padding-left: 25px;
+        }
+
+        /* Action Footer within Panel */
+        .panel-footer {
+            padding: 15px;
+            border-top: var(--border-width) solid var(--color-primary);
+            background: rgba(0, 255, 204, 0.03);
+        }
+
+        .btn-action {
+            width: 100%;
             background: var(--color-primary);
             color: #000;
             border: none;
             padding: 12px;
-            font-family: var(--font-main);
+            font-family: var(--font-ui);
             font-weight: bold;
             text-transform: uppercase;
             cursor: pointer;
-            width: calc(100% - 30px);
-            margin: 15px;
-            flex-shrink: 0;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            letter-spacing: 1px;
         }
 
-        .btn-primary:hover {
+        .btn-action:hover {
             background: #fff;
             box-shadow: 0 0 20px #fff;
-            transform: translateY(-2px);
         }
 
-        .btn-primary:active {
-            transform: translateY(0);
+        /* Global Status Bar Audit */
+        .status-bar {
+            grid-column: 1 / 3;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            border-left: 5px solid var(--color-primary);
         }
 
-        #info-panel {
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--color-primary);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        /* Information Detail Overlay */
+        #info-overlay {
             position: fixed;
-            right: var(--spacing-unit);
-            top: var(--spacing-unit);
-            width: 300px;
-            max-height: 400px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            z-index: 100;
             display: none;
-            z-index: 11;
         }
 
-        pre {
-            margin: 0;
-            padding: 15px;
-            font-size: 0.8rem;
-            overflow-x: auto;
-            color: #a0ffee;
+        @media (max-width: 768px) {
+            :root { --sidebar-width: 100%; }
+            .app-layout { grid-template-columns: 1fr; }
+            .sidebar { max-height: 60vh; }
         }
     </style>
 </head>
 <body>
 
-    <main id="canvas-container"></main>
+    <div id="canvas-container"></div>
 
-    <div id="ui-layer">
-        <aside class="sidebar panel">
-            <header class="panel-header">
-                <h2>PZQQET CORE</h2>
-            </header>
-            <section class="node-container" id="node-list-container">
-                <div id="node-list" class="node-list"></div>
-            </section>
-            <button class="btn-primary" onclick="praiApp.createNewNode()">+ Neuron Initialisieren</button>
-        </aside>
+    <div id="ui-root">
+        <div class="app-layout">
+            
+            <aside class="sidebar panel">
+                <header class="panel-header">
+                    <h2>PZQQET CORE</h2>
+                </header>
+                
+                <section class="scroll-area" id="node-list-viewport">
+                    <div id="node-list" class="list-items">
+                        </div>
+                </section>
 
-        <footer class="status-bar panel">
-            <span>SYSTEM: ACTIVE</span>
-            <span>ENCRYPTION: 100M%</span>
-            <span id="coord-display">X:0.00 Y:0.00 Z:0.00</span>
-        </footer>
+                <footer class="panel-footer">
+                    <button class="btn-action" onclick="praiApp.createNewNode()">
+                        + Neuron Initialisieren
+                    </button>
+                </footer>
+            </aside>
+
+            <main class="viewport-placeholder">
+                </main>
+
+            <footer class="status-bar panel">
+                <div class="status-item">
+                    <div class="status-indicator"></div>
+                    <span>SYSTEM: OPERATIONAL</span>
+                </div>
+                <div class="status-item">
+                    <span>MODE: PRAI-ORBITAL</span>
+                    <span>|</span>
+                    <span>ENCRYPTION: 100M%</span>
+                </div>
+                <div class="status-item" id="coord-readout">
+                    POS: 0.00 / 0.00 / 0.00
+                </div>
+            </footer>
+        </div>
     </div>
 
-    <section id="info-panel" class="panel">
+    <div id="info-overlay" class="panel">
         <header class="panel-header">
-            <h3>Knoten Details</h3>
+            <h3>NEURON DATA</h3>
         </header>
-        <div id="details-content"></div>
-        <button class="btn-primary" style="margin: 10px; width: auto;" onclick="document.getElementById('info-panel').style.display='none'">Schließen</button>
-    </section>
+        <div class="scroll-area">
+            <pre id="details-content" style="padding: 20px; color: #a0ffee; font-size: 0.8rem;"></pre>
+        </div>
+        <footer class="panel-footer">
+            <button class="btn-action" onclick="document.getElementById('info-overlay').style.display='none'">
+                Schließen
+            </button>
+        </footer>
+    </div>
 
     <script id="vs" type="x-shader/x-vertex">
         attribute vec3 position;
@@ -220,35 +293,33 @@
     </script>
 
     <script>
+        // System Bridge
         window.PRAI_SHADERS = {
             vertex: document.getElementById('vs').text,
             fragment: document.getElementById('fs').text
         };
 
+        // App Bootloader
         window.addEventListener('load', async () => {
             try {
-                if (typeof praiApp !== 'undefined') {
-                    await praiApp.init();
-                }
-                
-                if (typeof UniverseLoader !== 'undefined') {
-                    await UniverseLoader.loadAll();
-                }
-            } catch (err) {
-                console.error("PRAI-Core initialization error:", err);
+                if (typeof praiApp !== 'undefined') await praiApp.init();
+                if (typeof UniverseLoader !== 'undefined') await UniverseLoader.loadAll();
+            } catch (e) {
+                console.error("PRAI-Runtime Error:", e);
             }
         });
 
-        // Navigation Sync
+        // App-Like Interaktion
         document.addEventListener('mousemove', (e) => {
-            const x = ((e.clientX / window.innerWidth) - 0.5).toFixed(2);
-            const y = ((e.clientY / window.innerHeight) - 0.5).toFixed(2);
-            document.getElementById('coord-display').innerText = `X:${x} Y:${y} Z:0.00`;
+            const x = (e.clientX / window.innerWidth).toFixed(2);
+            const y = (e.clientY / window.innerHeight).toFixed(2);
+            document.getElementById('coord-readout').innerText = `POS: ${x} / ${y} / 0.00`;
         });
     </script>
 
     <script src="api.js"></script>
     <script src="app.js"></script>
     <script src="universe/loader.js"></script>
+
 </body>
 </html>
