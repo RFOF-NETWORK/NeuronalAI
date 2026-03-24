@@ -34,6 +34,32 @@
         </div>
     </div>
 
+        <script id="vs" type="x-shader/x-vertex">
+    attribute vec3 position;
+    uniform mat4 u_mvp;
+    void main() {
+        gl_Position = u_mvp * vec4(position, 1.0);
+    }
+</script>
+
+<script id="fs" type="x-shader/x-fragment">
+    precision mediump float;
+    uniform vec4 u_color;
+    void main() {
+        gl_FragColor = u_color;
+    }
+</script>
+
+<script>
+    // Diese kleine Logik stellt sicher, dass die Shader für den Loader bereitstehen
+    window.PRAI_SHADERS = {
+        vertex: document.getElementById('vs').text,
+        fragment: document.getElementById('fs').text
+    };
+    
+    console.log("3D-Kern-Logik in Index injiziert. Bereit für Orbitale.");
+</script>
+
     <script src="api.js"></script>
     <script src="app.js"></script>
 
