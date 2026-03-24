@@ -1,0 +1,6 @@
+{
+  "name": "darkmatter-core",
+  "type": "shader",
+  "entry": "core.js",
+  "shader": "darkmatter.glsl"
+}
