@@ -1,6 +1,11 @@
 {
   "scenes": [
+    "universe-shell",
     "darkmatter-core",
-    "knoten-torus"
+    "mini-world-orbit",
+    "knoten-torus",
+    "synapse-particles",
+    "portal-github",
+    "neuron-cluster"
   ]
 }
